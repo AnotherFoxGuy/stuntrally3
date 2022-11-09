@@ -25,7 +25,6 @@
 #include <OgrePass.h>
 #include <OgreRoot.h>
 #include <OgreHlms.h>
-#include <OgreHlmsUnlit.h>
 #include <OgreLogManager.h>
 
 namespace BtOgre

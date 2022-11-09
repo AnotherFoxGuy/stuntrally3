@@ -1,6 +1,7 @@
 #include "BtOgreExtras.h"
 #include <utility>
 
+#include <OgreHlmsUnlit.h>
 #include <OgreManualObject2.h>
 
 using namespace Ogre;

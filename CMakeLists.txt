@@ -7,7 +7,7 @@
 # Conan can be is used to get SR deps.
 #
 
-cmake_minimum_required( VERSION 3.16 )
+cmake_minimum_required(VERSION 3.16)
 
 # Include path for additional CMake library finding scripts
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/" ${CMAKE_MODULE_PATH})
@@ -23,11 +23,7 @@ include(CMakeDependentOption)
 include(Macros)
 include(FeatureSummary)
 
-
-project( TerrainDemo )
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-
+project(StuntRally CXX C)
 
 set(_PREFIX "SR_")
 
@@ -56,105 +52,63 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "GCC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif ()
-set( EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}" )
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}")
 
 
-
-
-include( CMake/Bootstrap.cmake )
-include( CMake/Dependencies/OGRE.cmake )
+include(CMake/Bootstrap.cmake)
 
 # Check for dependencies
 include(DependenciesConfig)
 resolve_conan_dependencies()
 
-
-#  root dir
-get_filename_component(DIR_ONE_ABOVE ../ ABSOLUTE)
-message(STATUS ${DIR_ONE_ABOVE})
-
-set(OGRE_NEXT_DIR ${DIR_ONE_ABOVE}/Ogre/ogre-next)
-
-## Fix 1
-set(OGRE_SOURCE ${OGRE_NEXT_DIR}/)
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(OGRE_BINARIES ${OGRE_NEXT_DIR}/build/Debug)
-else()
-	set(OGRE_BINARIES ${OGRE_NEXT_DIR}/build/Release)
-endif()
-
-
-#This scripts will add all the cpp and h files from src and include folders
-setupOgre( OGRE_SOURCE, OGRE_BINARIES, OGRE_LIBRARIES, FALSE, FALSE )
-
-## Fix 2 sdl
-include_directories("/usr/include/SDL2")
-include_directories(${DIR_ONE_ABOVE}/Ogre/ogre-next-deps/build/ogredeps/include)  #for rapidjson
+set(CMAKE_CXX_STANDARD 17)
 
 
 # Setup our application
-set( EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}" )
-if( MSVC )
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-	if( NOT PLATFORM_X64 )
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
-	endif()
-	add_definitions( -DUNICODE -D_UNICODE )
-endif()
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}")
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    if (NOT PLATFORM_X64)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
+    endif ()
+    add_definitions(-DUNICODE -D_UNICODE)
+endif ()
 
 
-macro( add_recursive dir retVal )
-	file( GLOB_RECURSE ${retVal} ${dir}/*.h ${dir}/*.cpp ${dir}/*.c )
+macro(add_recursive dir retVal)
+    file(GLOB_RECURSE ${retVal} ${dir}/*.h ${dir}/*.cpp ${dir}/*.c)
 endmacro()
 
 
 #  compiler  ----
 include_directories(
-	src
-	src/btOgre2
-	src/common
-	src/common/data
-	src/game
-	src/road
-	src/OgreCommon
-	src/OgreCommon/System
-	src/OgreCommon/System/Desktop
-	src/OgreCommon/Threading
-	src/OgreCommon/Utils
-	src/Terra
-	src/Terra/Hlms
-	src/Terra/Hlms/PbsListener
-	src/sound
-	src/vdrift
+        src
+        src/btOgre2
+        src/common
+        src/common/data
+        src/game
+        src/road
+        src/OgreCommon
+        src/OgreCommon/System
+        src/OgreCommon/System/Desktop
+        src/OgreCommon/Threading
+        src/OgreCommon/Utils
+        src/Terra
+        src/Terra/Hlms
+        src/Terra/Hlms/PbsListener
+        src/sound
+        src/vdrift
 )
 
-add_recursive( ./src GAME_SOURCES )
+add_recursive(./src GAME_SOURCES)
 
-
-# fix 4  since conan failed
-find_package( OpenAL REQUIRED )
-include_directories( ${OPENAL_INCLUDE_DIR} )
-
-
-add_executable( ${PROJECT_NAME} WIN32 ${GAME_SOURCES} )
+add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES})
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/game/pch.h)
 
+if (LINUX)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wswitch)
+endif ()
 
-# fix 4
-#message(STATUS "${OPENAL_INCLUDE_DIR} ${OPENAL_LIBRARY}")
-target_link_libraries( ${PROJECT_NAME} "${OPENAL_LIBRARY}")
-
-
-target_compile_options( ${PROJECT_NAME} PRIVATE -Wswitch)
-target_compile_features( ${PROJECT_NAME} PRIVATE cxx_std_17)
-
-
-#  linker  ----
-target_link_libraries( ${PROJECT_NAME} ${OGRE_LIBRARIES} )
-## Fix 3 sdl
-target_link_libraries( ${PROJECT_NAME} "-lSDL2" )
-
-message( STATUS "Libs: " ${LIBS} )
-target_link_libraries( ${PROJECT_NAME} ${LIBS} )
+message(STATUS "Libs: ${LIBS}")
+target_link_libraries(${PROJECT_NAME} ${LIBS})

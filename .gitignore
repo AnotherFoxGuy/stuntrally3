@@ -15,6 +15,7 @@ syntax: glob
 .cache
 bin/*
 build/*
+cmake-build-*/
 Dependencies/*
 tracks
 

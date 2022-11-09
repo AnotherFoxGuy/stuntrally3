@@ -30,10 +30,10 @@ THE SOFTWARE.
 
 #include "Terra/Hlms/OgreHlmsTerraPrerequisites.h"
 
-#include "OgreHlmsPbs.h"
+#include <Pbs/OgreHlmsPbs.h>
 
 #include "OgreConstBufferPool.h"
-#include "OgreHlmsBufferManager.h"
+#include "Common/OgreHlmsBufferManager.h"
 #include "OgreMatrix4.h"
 
 #include "OgreHeaderPrefix.h"
@@ -116,7 +116,7 @@ namespace Ogre
 		void _loadJson( const rapidjson::Value &jsonValue, const HlmsJson::NamedBlocks &blocks,
 								HlmsDatablock *datablock, const String &resourceGroup,
 								HlmsJsonListener *listener,
-						const String &    additionalTextureExtension ) const override;
+						const String &    additionalTextureExtension ) const;
 		/// @copydoc Hlms::_saveJson
 		void _saveJson( const HlmsDatablock *datablock, String &outString, HlmsJsonListener *listener,
 						const String &additionalTextureExtension ) const override;

@@ -10,7 +10,7 @@
 
 #include "OgreTextureGpuManager.h"
 #include "OgrePixelFormatGpuUtils.h"
-#include "OgreHlmsPbs.h"
+#include "Pbs/OgreHlmsPbs.h"
 #include "OgreHlmsManager.h"
 
 #ifdef OGRE_BUILD_COMPONENT_ATMOSPHERE

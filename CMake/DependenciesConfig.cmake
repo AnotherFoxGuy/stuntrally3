@@ -2,25 +2,31 @@ include(DependenciesFunctions)
 set(CMAKE_THREAD_PREFER_PTHREAD YES)
 find_package(Threads REQUIRED)
 
+
+if (USE_PACKAGE_MANAGER)
+    conan_add_remote(NAME ror-conan
+            URL https://git.anotherfoxguy.com/api/packages/rorbot/conan
+            VERIFY_SSL True
+            )
+endif ()
+
+
 # Some pkg-config files are broken, that is why they are commented out
 
-#add_external_lib(
-#        Boost
-#        #boost/1.80.0
-#        REQUIRED
-#        FIND_PACKAGE_OPTIONS COMPONENTS system thread filesystem wave
-#)
+add_external_lib(
+        Boost
+        boost/1.80.0
+        REQUIRED
+        FIND_PACKAGE_OPTIONS COMPONENTS system thread filesystem wave
+)
 
-#add_external_lib(
-#        OGRE
-#        ogre3d/13.4.4@anotherfoxguy/stable
-#        REQUIRED
-#        CONAN_PKG_NAME OGRE
-#        CONAN_OPTIONS ogre3d:nodeless_positioning=True ogre3d:resourcemanager_strict=off
-#        #  uncomment below for Ogre 1.9
-#        #PKG_CONFIG "OGRE, OGRE-Terrain, OGRE-Paging, OGRE-Overlay"        
-#        FIND_PACKAGE_OPTIONS CONFIG COMPONENTS Bites Overlay Paging RTShaderSystem MeshLodGenerator Terrain
-#)
+add_external_lib(
+        OGRE
+        ogre3d-next/2022.10@anotherfoxguy/stable
+        REQUIRED
+        CONAN_PKG_NAME ogre3d-next
+        FIND_PACKAGE_OPTIONS CONFIG COMPONENTS Bites Overlay Paging RTShaderSystem MeshLodGenerator Terrain
+)
 
 add_external_lib(
         BULLET
@@ -31,14 +37,14 @@ add_external_lib(
         INTERFACE_NAME Bullet::Bullet
 )
 
-#add_external_lib(
-#        SDL2
-#        sdl/2.0.20
-#        REQUIRED
-#        PKG_CONFIG "sdl2 >= 2.0"
-#        FIND_PACKAGE_OPTIONS CONFIG
-#        CONAN_OPTIONS sdl:sdl2main=False
-#)
+add_external_lib(
+        SDL2
+        sdl/2.24.1
+        REQUIRED
+        PKG_CONFIG "sdl2 >= 2.0"
+        FIND_PACKAGE_OPTIONS CONFIG
+        CONAN_OPTIONS sdl:sdl2main=False
+)
 
 #add_external_lib(
 #        MyGUI
@@ -64,14 +70,13 @@ add_external_lib(
         FIND_PACKAGE
 )
 
-#  todo: fix  Cannot load recipe.
-#add_external_lib(
-#        OpenAL
-#        openal/1.21.1
-#        REQUIRED
-#        PKG_CONFIG "openal >= 1.18"
-#        FIND_PACKAGE_OPTIONS CONFIG
-#)
+add_external_lib(
+        OpenAL
+        openal/1.21.1
+        REQUIRED
+        PKG_CONFIG "openal >= 1.18"
+        FIND_PACKAGE_OPTIONS CONFIG
+)
 
 #add_external_lib(
 #        ENet
@@ -98,15 +103,21 @@ add_external_lib(
 )
 
 
-set(LIBS #Boost::Boost
+# Fix conan version conflict
+add_external_lib(
+        zlib
+        zlib/1.2.13
+)
+
+set(LIBS Boost::Boost
         #Threads::Threads
-        #OGRE::OGRE
+        OGRE::OGRE
         Bullet::Bullet
-        #SDL2::SDL2
+        SDL2::SDL2
         #MyGUI::MyGUI
         VorbisFile::VorbisFile
         OGG::OGG
-        #OpenAL::OpenAL
+        OpenAL::OpenAL
         #ENet::ENet
         tinyxml::tinyxml
         tinyxml2::tinyxml2

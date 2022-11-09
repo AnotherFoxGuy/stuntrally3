@@ -13,9 +13,8 @@
 #include "OgreTextureGpuManager.h"
 #include "Vao/OgreVaoManager.h"
 
-#ifdef OGRE_BUILD_COMPONENT_ATMOSPHERE
+
 #    include "OgreAtmosphereNpr.h"
-#endif
 
 #include "game.h"  // snd
 #include "SoundMgr.h"

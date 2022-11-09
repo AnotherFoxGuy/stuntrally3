@@ -115,7 +115,7 @@ namespace Demo
 		Ogre::SceneNode *nodeTerrain = 0;
 
 		void CreatePlane(), DestroyPlane();
-		Ogre::MeshPtr planeMesh = 0;
+		Ogre::MeshPtr planeMesh;
 		Ogre::Item *planeItem = 0;
 		Ogre::SceneNode *planeNode = 0;
 

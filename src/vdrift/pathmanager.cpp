@@ -104,7 +104,7 @@ void PATHMANAGER::Init(bool log_paths)
 		HRESULT hRes = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA|CSIDL_FLAG_CREATE, &pidl);
 		if (hRes == NOERROR)
 		{
-			SHGetPathFromIDList(pidl, AppDir);
+			SHGetPathFromIDList(pidl, reinterpret_cast<LPWSTR>(AppDir));
 			int i;
 			for (i = 0; AppDir[i] != '\0'; ++i) {
 				if (AppDir[i] == '\\') str += '/';
@@ -275,7 +275,7 @@ bool PATHMANAGER::DirList(string dirpath, strlist& dirlist, string extension)
 	WIN32_FIND_DATA FileData;
 
 	// Get the proper directory path
-	sprintf(szDir, "%s\\*", dirpath.c_str());
+	sprintf(reinterpret_cast<char *>(szDir), "%s\\*", dirpath.c_str());
 
 	// Get the first file
 	hList = FindFirstFile(szDir, &FileData);
@@ -294,7 +294,10 @@ bool PATHMANAGER::DirList(string dirpath, strlist& dirlist, string extension)
 			{
 				if (FileData.cFileName[0] != '.')
 				{
-					dirlist.push_back(FileData.cFileName);
+                                        string aaa =
+                                      reinterpret_cast<basic_string<char> &&>(
+                                          FileData.cFileName);
+					dirlist.push_back(aaa);
 				}
 			}
 		}
@@ -331,7 +334,7 @@ namespace
 	fs::path execname()
 	{
 		char buf[1024];
-		DWORD ret = GetModuleFileName(NULL, buf, sizeof(buf));
+		DWORD ret = GetModuleFileName(NULL, reinterpret_cast<LPWSTR>(buf), sizeof(buf));
 		if (ret == 0 || ret == sizeof(buf)) return fs::path();
 		return buf;
 	}
