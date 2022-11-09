@@ -108,14 +108,8 @@ jobs:
       - name: Build
         run: |
           cd build
-          ninja install
+          ninja
         shell: cmd
-
-      - name: Upload redist folder
-        uses: actions/upload-artifact@v3
-        with:
-          name: stuntrally-win
-          path: build/redist
 
       - name: Clean Conan pkgs
         run: conan remove "*" -fsb

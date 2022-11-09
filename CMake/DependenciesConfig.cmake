@@ -24,7 +24,6 @@ add_external_lib(
         OGRE
         ogre3d-next/2022.10@anotherfoxguy/stable
         REQUIRED
-        CONAN_PKG_NAME ogre3d-next
         FIND_PACKAGE_OPTIONS CONFIG COMPONENTS Bites Overlay Paging RTShaderSystem MeshLodGenerator Terrain
 )
 
