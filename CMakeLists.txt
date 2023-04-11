@@ -157,6 +157,9 @@ foreach (EXE ${EXE_LIST})
 
     add_executable(${EXE} WIN32 ${EXE_SOURCES})
 
+    # Generate source groups for use in IDEs
+    source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${EXE_SOURCES})
+
     foreach (subdir ${SRC_DIRS})
         #message( STATUS ${subdir} )
         target_include_directories(${EXE} PRIVATE ${subdir})
@@ -169,62 +172,24 @@ foreach (EXE ${EXE_LIST})
         target_precompile_headers(${EXE} PRIVATE src/game/pch.h)
     endif ()
 
-    #  threads
     target_link_libraries(
-            ${EXE}
-            Boost::boost
-            Bullet::Bullet
-            MyGUI::MyGUI
-            Ogg::ogg
-            OGRE::OGRE
-            OpenAL::OpenAL
-            SDL2::SDL2
+            ${EXE} 
+            PRIVATE
             Threads::Threads
+            OGRE::OGRE
+            Bullet::Bullet
+            SDL2::SDL2
+            MyGUI::MyGUI
             Vorbis::vorbis
-            tinyxml2::tinyxml2
+            Vorbis::vorbisfile
+            Ogg::ogg
+            OpenAL::OpenAL
             tinyxml::tinyxml
+            tinyxml2::tinyxml2
     )
 
 endforeach ()
 
 message(STATUS "---------- SR end")
 
-
-	#  threads
-	target_link_libraries( ${EXE} ${CMAKE_THREAD_LIBS_INIT} )
-
-
-	#  OpenAL
-	target_link_libraries( ${EXE} "${OPENAL_LIBRARY}" )
-
-
-	#  Ogre  ----
-	target_link_libraries( ${EXE} ${OGRE_LIBRARIES} )
-
-	#  SDL
-	target_link_libraries( ${EXE} "-lSDL2" )
-
-
-	#  MyGui  ----   # todo: windows ..
-	if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    	set(SUFFIX_D "_d")
-	else()
-		set(SUFFIX_D "")
-	endif()
-
-	target_link_libraries( ${EXE} ${DIR_ONE_ABOVE}/mygui-next/build/${CMAKE_BUILD_TYPE}/lib/libMyGUI.Ogre2Platform${SUFFIX_D}.a )
-
-	if ( ${EXE} STREQUAL ${GAME_EXE} )  # game, once
-		add_library( libMyGUIEngine SHARED IMPORTED )
-	endif()
-	set_target_properties( libMyGUIEngine PROPERTIES IMPORTED_LOCATION ${DIR_ONE_ABOVE}/mygui-next/build/${CMAKE_BUILD_TYPE}/lib/libMyGUIEngine${SUFFIX_D}.so )
-	target_link_libraries( ${EXE} libMyGUIEngine )
-
-
-	#  rest
-	#message( STATUS "Libs  " ${EXE} "  " ${LIBS} )
-	target_link_libraries( ${EXE} ${LIBS} )
-
-endforeach()
-
-message( STATUS "---------- SR end" )
+feature_summary(WHAT ALL)
