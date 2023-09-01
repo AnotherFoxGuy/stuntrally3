@@ -16,7 +16,7 @@ class StuntRally3(ConanFile):
 
     def requirements(self):
         self.requires("boost/1.81.0")
-        self.requires("ogre3d-next/2023.04@anotherfoxguy/stable" , override=True)
+        self.requires("ogre3d-next/2023.09@anotherfoxguy/stable" , override=True)
         self.requires(
             "bullet3/3.25@anotherfoxguy/patched"
         )  # Needs a patched to build on windows
