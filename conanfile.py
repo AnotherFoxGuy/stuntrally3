@@ -12,9 +12,10 @@ class StuntRally3(ConanFile):
     }
     default_options = {
         "system_pkgs": False,
-        "bullet3/*:extras": True,
-        "bullet3/*:network_support": True,
-        "sdl/*:sdl2main": False,
+        "bullet3*:extras": True,
+        "bullet3*:network_support": True,
+        "sdl*:sdl2main": False,
+        "sdl*:pulse": False
     }
 
     def layout(self):
@@ -25,20 +26,20 @@ class StuntRally3(ConanFile):
         self.requires("mygui-next/2024.01@anotherfoxguy/stable")
 
         if not self.options.system_pkgs:
-            self.requires("boost/1.83.0")
-            self.requires("bullet3/3.25@anotherfoxguy/patched") 
-            self.requires("sdl/2.30.7")
+            self.requires("boost/1.91.0")
+            self.requires("bullet3/3.25")
+            self.requires("sdl/2.32.10")
             self.requires("ogg/1.3.5")
             self.requires("vorbis/1.3.7")
-            self.requires("openal-soft/1.22.2@anotherfoxguy/patched")
+            self.requires("openal-soft/1.24.3")
             self.requires("enet/1.3.17")
-            self.requires("tinyxml2/9.0.0")
-            self.requires("rapidjson/cci.20230929", force=True)
+            self.requires("tinyxml2/11.0.0")
+            self.requires("rapidjson/cci.20250205", force=True)
 
-            self.requires("libalsa/1.2.10", override=True)
-            self.requires("libpng/1.6.40", override=True)
-            self.requires("libwebp/1.3.2", override=True)
-            self.requires("zlib/1.3", override=True)
+            self.requires("libalsa/1.2.13", override=True)
+            self.requires("libpng/1.6.59", override=True)
+            # self.requires("libwebp/1.3.2", override=True)
+            # self.requires("zlib/1.3", override=True)
 
     def generate(self):
         tc = CMakeToolchain(self)
@@ -49,26 +50,13 @@ class StuntRally3(ConanFile):
             deps.configuration = "RelWithDebInfo"
             deps.generate()
 
-        bindirs = []
         for dep in self.dependencies.values():
-            bindirs += dep.cpp_info.bindirs
+            for f in dep.cpp_info.bindirs:
+                self.cp_data(f)
+            for f in dep.cpp_info.libdirs:
+                self.cp_data(f)
 
-        bindirs_win = []
-        for dir in bindirs:
-            bindirs_win.append(os.path.join(dir, f"{self.settings.build_type}"))
-
-        conan_data = 'set(CONAN_BIN_DIRS "%s;%s")\n' % (
-            ";".join(bindirs).replace("\\", "/"),
-            ";".join(bindirs_win).replace("\\", "/"),
-        )
-
-        save(
-            self,
-            os.path.join(self.build_folder, "cmake", "ConanBinDirs.cmake"),
-            conan_data,
-        )
-
-        if self.settings.os == "Windows":
-            libdir = os.path.join(self.source_folder, "bin", f"{self.settings.build_type}")
-            for f in self.dependencies["ogre3d-next"].cpp_info.bindirs:
-                copy(self, "*.dll", f, libdir, False)
+    def cp_data(self, src):
+        bindir = os.path.join(self.source_folder, "bin", f"{self.settings.build_type}")
+        copy(self, "*.dll", src, bindir, False)
+        copy(self, "*.so*", src, bindir, False)
